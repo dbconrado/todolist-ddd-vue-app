@@ -1,24 +1,6 @@
 <template>
   <div id="app">
-    <nav class="cyan darken-3">
-      <div class="container">
-        <div class="nav-wrapper">
-          <a href="#" data-target="main-menu" class="button-collapse show-on-large sidenav-trigger">
-            <i class="fa fa-bars"></i>
-          </a>
-          <router-link to="/" class="brand-logo center sidenav-close">Todolist</router-link>
-          <ul id="main-menu" class="sidenav">
-            <li>
-              <router-link to="/" class="sidenav-close"><i class="fa fa-tasks"></i>Tasks</router-link>
-            </li>
-            <li class="divider"></li>
-            <li>
-              <router-link to="/logout" class="sidenav-close"><i class="fas fa-sign-out-alt"></i>Logout</router-link>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <TopBarComponent v-if="auth.loggedIn()" />
     <div class="progress" v-if="loading">
       <div class="indeterminate"></div>
     </div>
@@ -33,27 +15,46 @@
 
 <script>
 import TaskListComponent from './components/TaskListComponent.vue'
-import NotFoundComponent from './components/NotFoundComponent.vue'
-import M from 'materialize-css'
+import TopBarComponent from './components/TopBarComponent'
 import VueRouter from 'vue-router'
+import LoginComponentVue from './components/LoginComponent.vue'
+import authService from './services/AuthService';
+
+function requireAuth(to, from, next) {
+  if (!authService.loggedIn()) {
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
+  } else {
+    next();
+  }
+}
 
 const routes = [
-  { path: '/', component: TaskListComponent },
-  { path: '/logout', component: NotFoundComponent }
+  { path: '/login', component: LoginComponentVue },
+  { path: '/', component: TaskListComponent, beforeEnter: requireAuth },
+  { path: '/logout', beforeEnter (to, from, next) {
+    authService.logout();
+    next('/login');
+  } }
 ]
 
 const router = new VueRouter({
+  mode: 'history',
+  base: __dirname,
   routes
 })
 
 export default {
   name: 'App',
-  router,
-  mounted() {
-    M.AutoInit()
+  components: {
+    TopBarComponent
   },
+  router,
   data: () => ({
-    loading: false
+    loading: false,
+    auth: authService
   }),
   methods: {
     hideProgress() {

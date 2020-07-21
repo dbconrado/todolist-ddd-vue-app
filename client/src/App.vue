@@ -6,14 +6,14 @@
           <a href="#" data-target="main-menu" class="button-collapse show-on-large sidenav-trigger">
             <i class="fa fa-bars"></i>
           </a>
-          <a href="/" class="brand-logo center">Todolist</a>
+          <router-link to="/" class="brand-logo center sidenav-close">Todolist</router-link>
           <ul id="main-menu" class="sidenav">
             <li>
-              <a href="/"><i class="fa fa-tasks"></i>Tasks</a>
+              <router-link to="/" class="sidenav-close"><i class="fa fa-tasks"></i>Tasks</router-link>
             </li>
             <li class="divider"></li>
             <li>
-              <a href="/logout"><i class="fas fa-sign-out-alt"></i>Logout</a>
+              <router-link to="/logout" class="sidenav-close"><i class="fas fa-sign-out-alt"></i>Logout</router-link>
             </li>
           </ul>
         </div>
@@ -25,7 +25,7 @@
     <main>
       <div class="container">
         <img alt="Vue logo" src="./assets/logo.png">
-        <TaskListComponent />
+        <router-view></router-view>
       </div>
     </main>
   </div>
@@ -33,13 +33,22 @@
 
 <script>
 import TaskListComponent from './components/TaskListComponent.vue'
+import NotFoundComponent from './components/NotFoundComponent.vue'
 import M from 'materialize-css'
+import VueRouter from 'vue-router'
+
+const routes = [
+  { path: '/', component: TaskListComponent },
+  { path: '/logout', component: NotFoundComponent }
+]
+
+const router = new VueRouter({
+  routes
+})
 
 export default {
   name: 'App',
-  components: {
-    TaskListComponent
-  },
+  router,
   mounted() {
     M.AutoInit()
   },

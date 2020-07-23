@@ -1,3 +1,10 @@
+import { triesToLogin } from '../presentation/login-view'
+import axios from './axios-config'
+import { doLogin as createDoLogin } from './UserService'
+
+const doLogin = createDoLogin({axios});
+console.log(doLogin);
+
 export default {
     /**
      * Tries to login the user
@@ -11,23 +18,22 @@ export default {
     login (username, password, callback) {
 
         if (localStorage.token) {
-            if (callback) callback(true);
-            return;
+            if (callback) callback({ authenticated: true })
         }
 
         this.invokeAuthApi(username, password, (res) => {
+            console.log(res);
             if (res.authenticated) {
                 localStorage.token = res.token;
-                if (callback) callback(true);
+                if (callback) callback({ authenticated: true });
             } else {
-                if (callback) callback(false);
+                if (callback) callback({ authenticated: false, error: res.error });
             }
         })
     },
 
-    logout (callback) {
+    async logout () {
         delete localStorage.token;
-        if (callback) callback();
     },
 
     loggedIn() {
@@ -35,15 +41,23 @@ export default {
     },
 
     invokeAuthApi (username, password, callback) {
-        setTimeout(() => {
-            if ((username == 'daniel') && (password == '123')) {
-                callback({
-                    authenticated: true,
-                    token: Math.random().toString(36).substring(7)
-                });
-            } else {
-                callback({ authenticated: false })
-            }
-        }, 0)
+        triesToLogin({
+            doLogin,
+            lockView: () => {},
+            setProgress: () => {},
+            onError: (err) => {
+                callback({ authenticated: false, error: err })
+            },
+            next: callback
+        })({ username, password });
+
+        /*if ((username == 'daniel') && (password == '123')) {
+            callback({
+                authenticated: true,
+                token: Math.random().toString(36).substring(7)
+            });
+        } else {
+            callback({ authenticated: false })
+        }*/
     }
 }

@@ -15,7 +15,7 @@
             <button class="btn waves-effect" type="submit">Login</button>
         </div>
         <div v-if="error">
-            <p>Bad login information.</p>
+            <p>{{ errorMsg }}</p>
         </div>
     </form>
 </template>
@@ -30,18 +30,20 @@ export default {
         return {
             username: '',
             password: '',
-            error: false
+            error: false,
+            errorMsg: 'Bad login information'
         }
     },
     methods: {
-        login () {
-            authService.login(this.username, this.password, loggedIn => {
-                if (!loggedIn) {
+        async login () {
+            authService.login(this.username, this.password, res => {
+                if (!res.authenticated) {
                     this.error = true;
+                    this.errorMsg = res.error;
                 } else {
                     this.$router.replace(this.$route.query.redirect || '/');
                 }
-            })
+            });
         }
     }
 }

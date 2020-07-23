@@ -13,13 +13,23 @@ const { createTaskUseCase } = require('./application/createTaskUseCase');
  * @param {Function} implementation.getTaskById a concrete implementation of getTaskById
  * @param {Function} implementation.saveTask a concrete implementation of saveTask
  * @param {Function} implementation.getTaskById a concrete implementation of getTaskById
+ * @param {Function} implementation.getUserByUsername a concrete implementation of getUserByUsername
+ * @param {Function} implementation.createUser a concrete implementation of createUser
  * @returns {Object} a todolist model object.
  */
-const TodolistModel = ({ getTaskById, saveTask, getAllTasks }) => ({
+const TodolistModel = ({ 
+    getTaskById, 
+    saveTask, 
+    getAllTasks, 
+    getUserByUsername,
+    createUser
+ }) => ({
     completeTask: completeTaskUseCase({ getTaskById, saveTask }),
     showAllTasks: showAllTasksUseCase({ getAllTasks }),
     createTask: createTaskUseCase({ saveTask }),
-    getTaskById
+    getTaskById,
+    getUserByUsername,
+    createUser
 })
 
 module.exports = {

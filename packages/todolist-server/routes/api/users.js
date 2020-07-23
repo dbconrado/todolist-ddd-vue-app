@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const todolist = require('../../model/InMemoryTodolist');
+const todolist = require('@todolist/model');
 
 router.post('/login', async (req, res) => {
     try {

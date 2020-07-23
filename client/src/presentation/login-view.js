@@ -1,21 +1,31 @@
+/**
+ * This is a function that encapsulates
+ * all the behaviors I've expected the login
+ * page to have.
+ * @todo this is not as good as I intended too. Need refactoring.
+ * @todo the name definitely needs to change.
+ *  
+ */
 export const triesToLogin = ({
-    doLogin,
+    login,
     lockView,
     setProgress,
     onError,
-    next
+    onSuccess
 }) => async ({ username, password }) => {
     lockView(true);
     setProgress(true);
     try {
         
-        const res = await doLogin(username, password);
+        const res = await login(username, password);
         if (!res.authenticated) {
-            onError(res.error || 'Username/password not valid');
+            onError(res.error);
+            lockView(false);
+            setProgress(false);
         } else {
             lockView(false);
-            setProgress(true);
-            next(res);
+            setProgress(false);
+            onSuccess(res);
         }
 
     }

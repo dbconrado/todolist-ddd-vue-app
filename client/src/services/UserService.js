@@ -1,7 +1,7 @@
 const URL = '/users/';
 
 /**
- * Tries to login the user at the REST service
+ * Tries to login the user with the REST service
  * @param {Object} options
  * @param {Object} options.axios - the axios instance
  * @returns {{
@@ -30,15 +30,25 @@ export const doLogin = ({ axios }) => async (username, password) => {
             user: res.data.user
         }
     } catch (err) {
-        if (err.response.status == 404) {
+        if (err.response && err.response.status == 404) {
             return {
-                authenticated: false
+                authenticated: false,
+                error: 'Username/password not valid'
             }
-        } else {
+        } else if (err.response) {
             return {
                 authenticated: false,
                 error: `Server has returned ${err.response.status}: ${err.response.statusText}. Context: ${err.response.data.error}`
             }
+        } else {
+            return {
+                authenticated: false,
+                error: 'Can\'t connect to the server. Try again later?'
+            }
         }
     }
+}
+
+export default {
+    doLogin
 }
